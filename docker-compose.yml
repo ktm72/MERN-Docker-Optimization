@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  express_backend:
+    build:
+      dockerfile: Dockerfile
+      context: ./backend
+    container_name: express_backend
+    hostname: backend
+    restart: always
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./backend/.env
+    networks:
+      - proxy-network
+
+  react_frontend:
+    build:
+      dockerfile: Dockerfile
+      context: ./frontend
+    container_name: react_frontend
+    hostname: frontend
+    ports:
+      - "3000:80"
+    env_file:
+      - ./frontend/.env
+    volumes:
+      - ./frontend/dist:/react/dist
+    depends_on:
+      - express_backend
+    networks:
+      - proxy-network
+
+networks:
+  proxy-network:
+    driver: bridge
+    name: docker_express_react

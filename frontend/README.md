@@ -1,17 +1,30 @@
-## Clone this repo
+### React - Nginx
 
-1. cd into dir
+```Dockerfile
+FROM node:20-alpine as build-stage
 
-# Install
+WORKDIR /react
 
+COPY package*.json .
+
+RUN npm install
+
+COPY . .
+
+RUN npm run build
+
+FROM nginx:stable-alpine as production-stage
+
+COPY --from=build-stage /react/dist /usr/share/nginx/html
+
+EXPOSE 3000
+
+CMD ["nginx","-g","daemon off;"]
 ```
-npm install
-```
 
-2. setup base url, check env
-
-# Dev
-
-```
-npm run dev
-```
+> I have spilt the build into 2 stages
+>
+> - build stage
+> - production
+>   for build I have used node:20-alpine image
+>   for production I have used nginx:stable-alpine image
