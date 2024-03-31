@@ -1,21 +1,17 @@
-FROM node:20-alpine AS build
+FROM node:20-alpine
 
 WORKDIR /app
 
 COPY package*.json .
 
-RUN npm install
+RUN --mount=type=cache,target=/app/.npm \
+  npm set cache /app/.npm && \
+  npm ci --only=production
 
-COPY . .
+USER node
 
-RUN npm run build
-
-FROM node:20-alpine AS runtime
-
-WORKDIR /app
-
-COPY --from=build /app .
+COPY --chown=node:node ./dist/ .
 
 EXPOSE 8080
 
-CMD ["npm", "start"]
+CMD ["node", "index.js"]

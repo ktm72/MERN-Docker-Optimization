@@ -1,5 +1,6 @@
 node_modules
-dist
 MockAPI
 Dockerfile
 readme.md
+tsconfig.json
+src
